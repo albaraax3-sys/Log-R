@@ -1,28 +1,18 @@
-const { Client, GatewayIntentBits } = require('discord.js');
-const express = require('express');
+import os
+from flask import Flask
+from threading import Thread
 
-// سيرفر وهمي للـ UptimeRobot
-const app = express();
-app.get('/', (req, res) => res.send('Bot is online!'));
-app.listen(3000);
+app = Flask('')
 
-// البوت
-const client = new Client({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
-    ]
-});
+@app.route('/')
+def home():
+    return "I am alive!"
 
-client.on('ready', () => {
-    console.log(`✅ Logged in as ${client.user.tag}`);
-});
+def run():
+    # Render يطلب أحياناً بورت معين، هذا السطر يجعله يختاره تلقائياً
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port)
 
-client.on('messageCreate', (message) => {
-    if (message.content === '!ping') {
-        message.reply('Pong! 🏓');
-    }
-});
-
-client.login(process.env.TOKEN);
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
